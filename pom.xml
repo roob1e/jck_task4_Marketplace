@@ -21,6 +21,7 @@
         <jstl-api.version>3.0.2</jstl-api.version>
         <jstl-impl.version>3.0.1</jstl-impl.version>
         <mockito.version>5.18.0</mockito.version>
+        <minio.version>8.5.17</minio.version>
     </properties>
 
     <dependencies>
@@ -63,6 +64,12 @@
         </dependency>
 
         <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
@@ -85,12 +92,6 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${mockito.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.38</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

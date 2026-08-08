@@ -1,7 +1,8 @@
 package by.assxmblxr.marketplace.db;
 
 import by.assxmblxr.marketplace.exception.ConnectionPoolException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -10,8 +11,8 @@ import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-@Slf4j
 public final class ConnectionPool {
+  private static final Logger log = LoggerFactory.getLogger(ConnectionPool.class);
   private static final ConnectionPool INSTANCE = new ConnectionPool();
 
   private final BlockingQueue<Connection> pool;
