@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/assxmblxr/Library/Caches/JetBrains/IntelliJIdea2025.3/**)",
+      "Read(//Users/assxmblxr/Library/Logs/JetBrains/IntelliJIdea2025.3/**)",
+      "Bash(kubectl get pods *)",
+      "Bash(PGPASSWORD=dev_password_change_me psql *)"
+    ]
+  }
+}

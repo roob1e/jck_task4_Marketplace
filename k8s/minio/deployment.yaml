@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: MinIO
+  labels:
+    app: MinIO
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: MinIO
+  template:
+    metadata:
+      name: MinIO
+      labels:
+        app: MinIO
+    spec:
+      containers:
+        - name: MinIO
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
+      
