@@ -1,26 +1,52 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: MinIO
+  name: minio
+  namespace: marketplace
   labels:
-    app: MinIO
+    app: minio
 spec:
   replicas: 1
+  strategy:
+    # ReadWriteOnce PVC can only be mounted by one pod at a time —
+    # kill the old pod before starting the new one instead of rolling.
+    type: Recreate
   selector:
     matchLabels:
-      app: MinIO
+      app: minio
   template:
     metadata:
-      name: MinIO
       labels:
-        app: MinIO
+        app: minio
     spec:
       containers:
-        - name: MinIO
-          image: nginx
-          imagePullPolicy: IfNotPresent
+        - name: minio
+          image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+          args: ["server", "/data", "--console-address", ":9001"]
           ports:
-            - containerPort: 80
-              protocol: TCP
-      restartPolicy: Always
-      
+            - containerPort: 9000
+              name: api
+            - containerPort: 9001
+              name: console
+          envFrom:
+            - secretRef:
+                name: minio-credentials
+          volumeMounts:
+            - name: minio-storage
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: minio-storage
+          persistentVolumeClaim:
+            claimName: minio-data
