@@ -31,8 +31,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JDBC driver: compiled code only ever talks to java.sql.* interfaces,
-             the driver itself is loaded reflectively at runtime -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -40,13 +38,12 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Logging: code depends only on the slf4j-api interface, Logback is the
-             runtime implementation plugged in via classpath -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -54,8 +51,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JSTL: Tomcat (unlike a full Java EE server) does not bundle JSTL,
-             so both the API and an implementation must ship inside the WAR -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
