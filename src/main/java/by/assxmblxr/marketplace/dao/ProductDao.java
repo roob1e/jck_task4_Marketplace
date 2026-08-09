@@ -2,6 +2,7 @@ package by.assxmblxr.marketplace.dao;
 
 import by.assxmblxr.marketplace.model.Product;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,6 @@ public interface ProductDao {
   Optional<Product> findById(Long id);
   List<Product> findAllActive(int page, int pageSize);
   List<Product> findAllBySeller(Long sellerId, int page, int pageSize);
+  List<Product> findAllByCategory(Long categoryId, int page, int pageSize);
+  void updateRating(Long productId, BigDecimal rating);
 }

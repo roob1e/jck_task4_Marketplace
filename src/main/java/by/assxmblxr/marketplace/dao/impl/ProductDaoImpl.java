@@ -39,7 +39,7 @@ public class ProductDaoImpl implements ProductDao {
           long id = rs.getLong("id");
           boolean isDeleted = rs.getBoolean("is_deleted");
           product = new Product(id, product.sellerId(), product.categoryId(), product.name(), product.description(),
-                  product.price(), product.left(), isDeleted);
+                  product.price(), product.left(), isDeleted, null);
         }
       }
       return product;
@@ -117,7 +117,7 @@ public class ProductDaoImpl implements ProductDao {
     String sql = """
             SELECT * FROM products
             WHERE is_deleted = false
-            ORDER BY id
+            ORDER BY rating DESC NULLS LAST
             LIMIT ? OFFSET ?;
             """;
     try (Connection conn = pool.getConnection();
@@ -165,6 +165,49 @@ public class ProductDaoImpl implements ProductDao {
     }
   }
 
+  @Override
+  public List<Product> findAllByCategory(Long categoryId, int page, int pageSize) {
+    String sql = """
+            SELECT * FROM products
+            WHERE category_id = ?
+            ORDER BY rating DESC NULLS LAST
+            LIMIT ? OFFSET ?;
+            """;
+    try (Connection conn = pool.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+      int offset = (page - 1) * pageSize;
+      ps.setLong(1, categoryId);
+      ps.setInt(2, pageSize);
+      ps.setInt(3, offset);
+      try (ResultSet rs = ps.executeQuery()) {
+        List<Product> products = new ArrayList<>();
+        while (rs.next()) {
+          Product product = mapFromResultSet(rs);
+          products.add(product);
+        }
+        return products;
+      }
+    } catch (SQLException e) {
+      throw new DaoException(e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public void updateRating(Long productId, BigDecimal rating) {
+    String sql = """
+            UPDATE products
+            SET rating = ?
+            WHERE id = ?;
+    """;
+    try (Connection conn = pool.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setBigDecimal(1, rating);
+      ps.setLong(2, productId);
+      ps.executeUpdate();
+    } catch (SQLException e) {
+      throw new DaoException(e.getMessage(), e);
+    }
+  }
+
   private Product mapFromResultSet(ResultSet rs) throws SQLException {
     Long id = rs.getLong("id");
     Long sellerId = rs.getLong("seller_id");
@@ -174,6 +217,7 @@ public class ProductDaoImpl implements ProductDao {
     BigDecimal price = rs.getBigDecimal("price");
     int left = rs.getInt("left");
     boolean isDeleted = rs.getBoolean("is_deleted");
-    return new Product(id, sellerId, categoryId, name, description, price, left, isDeleted);
+    BigDecimal rating = rs.getBigDecimal("rating");
+    return new Product(id, sellerId, categoryId, name, description, price, left, isDeleted, rating);
   }
 }

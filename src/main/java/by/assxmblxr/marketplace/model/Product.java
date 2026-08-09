@@ -10,6 +10,7 @@ public record Product(
         String description,
         BigDecimal price,
         int left,
-        boolean isDeleted
+        boolean isDeleted,
+        BigDecimal rating
 ) {
 }

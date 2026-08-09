@@ -172,3 +172,32 @@ CREATE TABLE IF NOT EXISTS public.wishlist_items
 
 ALTER TABLE IF EXISTS public.wishlist_items
     OWNER to marketplace_user;
+
+CREATE TABLE IF NOT EXISTS public.reviews
+(
+    id bigint NOT NULL DEFAULT nextval('reviews_id_seq'::regclass),
+    order_item_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    product_id bigint NOT NULL,
+    rating smallint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+                             CONSTRAINT reviews_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_order_item_id FOREIGN KEY (order_item_id)
+    REFERENCES public.order_items (id) MATCH SIMPLE
+                         ON UPDATE NO ACTION
+                         ON DELETE NO ACTION,
+    CONSTRAINT fk_product_id FOREIGN KEY (product_id)
+    REFERENCES public.products (id) MATCH SIMPLE
+                         ON UPDATE NO ACTION
+                         ON DELETE NO ACTION,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+                         ON UPDATE NO ACTION
+                         ON DELETE NO ACTION,
+    CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5)
+    )
+
+    TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.reviews
+    OWNER to marketplace_user;
