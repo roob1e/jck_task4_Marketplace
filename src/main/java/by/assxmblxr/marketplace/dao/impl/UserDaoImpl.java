@@ -34,9 +34,11 @@ public class UserDaoImpl implements UserDao {
         if (rs.next()) {
           long id = rs.getLong(1);
           user = new User(id, user.role(), user.login(), user.passwordHash(), user.address());
+          return user;
+        } else {
+          throw new DaoException("Failed to create a user");
         }
       }
-      return user;
     } catch (SQLException e) {
       throw new DaoException(e.getMessage(), e);
     }

@@ -40,9 +40,11 @@ public class ProductDaoImpl implements ProductDao {
           boolean isDeleted = rs.getBoolean("is_deleted");
           product = new Product(id, product.sellerId(), product.categoryId(), product.name(), product.description(),
                   product.price(), product.left(), isDeleted, null);
+          return product;
+        } else {
+          throw new DaoException("Failed to create a product");
         }
       }
-      return product;
     } catch (SQLException e) {
       throw new DaoException(e.getMessage(), e);
     }

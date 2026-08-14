@@ -31,9 +31,11 @@ public class ProductImageDaoImpl implements ProductImageDao {
         if (rs.next()) {
           long id = rs.getLong(1);
           image = new ProductImage(id, image.productId(), image.path(), image.order());
+          return image;
+        } else {
+          throw new DaoException("Failed to create a product image");
         }
       }
-      return image;
     } catch (SQLException e) {
       throw new DaoException(e.getMessage(), e);
     }

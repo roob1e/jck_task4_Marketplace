@@ -40,9 +40,11 @@ public class ReviewDaoImpl implements ReviewDao {
           long id = rs.getLong("id");
           OffsetDateTime createdAt = rs.getObject("created_at", OffsetDateTime.class);
           review = new Review(id, review.orderItemId(), review.userId(), review.productId(),
-                  review.rating(), createdAt, review.description());
+                  review .rating(), createdAt, review.description());
+          return review;
+        } else {
+          throw new DaoException("Failed to create a review");
         }
-        return review;
       }
     } catch (SQLException e) {
       throw new DaoException(e.getMessage(), e);
