@@ -26,7 +26,7 @@ public class OrderDaoImpl implements OrderDao {
             VALUES (?, ?, ?);
             """;
     try (Connection conn = pool.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+         PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
       ps.setLong(1, order.buyerId());
       ps.setString(2, order.status().name());
       ps.setObject(3, OffsetDateTime.now());

@@ -167,7 +167,6 @@ public class ProductImageDaoImpl implements ProductImageDao {
       }
     } catch (SQLException e) {
       throw new DaoException(e.getMessage(), e);
-    } finally {
     }
   }
 

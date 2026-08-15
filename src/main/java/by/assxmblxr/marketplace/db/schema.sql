@@ -1,203 +1,177 @@
-CREATE TABLE IF NOT EXISTS public.cart_items
+create table public.roles
 (
-    "user_Id" bigint NOT NULL DEFAULT nextval('"cart_items_user_Id_seq"'::regclass),
-    product_id bigint NOT NULL DEFAULT nextval('cart_items_product_id_seq'::regclass),
-    quantity bigint NOT NULL,
-    CONSTRAINT cart_items_pkey PRIMARY KEY ("user_Id", product_id),
-    CONSTRAINT fk_product_id FOREIGN KEY (product_id)
-    REFERENCES public.products (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-    CONSTRAINT fk_user_id FOREIGN KEY ("user_Id")
-    REFERENCES public.users (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    )
+    id   bigserial
+        primary key,
+    name varchar not null
+        constraint uq_roles_name
+            unique
+);
 
-    TABLESPACE pg_default;
+alter table public.roles
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.cart_items
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.categories
+create table public.users
 (
-    id bigint NOT NULL DEFAULT nextval('categories_id_seq'::regclass),
-    name character varying COLLATE pg_catalog."default",
-    CONSTRAINT categories_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_categories UNIQUE (name)
-    )
+    id            bigserial
+        primary key,
+    role_id       bigint  not null
+        constraint fk_role_id
+            references public.roles
+            on delete restrict,
+    login         varchar not null
+        constraint uq_login
+            unique,
+    password_hash varchar not null,
+    address       varchar
+);
 
-    TABLESPACE pg_default;
+alter table public.users
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.categories
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.order_items
+create table public.categories
 (
-    id bigint NOT NULL DEFAULT nextval('order_items_id_seq'::regclass),
-    order_id bigint NOT NULL DEFAULT nextval('order_items_order_id_seq'::regclass),
-    product_id bigint NOT NULL DEFAULT nextval('order_items_product_id_seq'::regclass),
-    quantity bigint NOT NULL,
-    price_at_pruchase numeric(10,2) NOT NULL,
-    status character varying COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT order_items_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_order_id FOREIGN KEY (order_id)
-    REFERENCES public.orders (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-    CONSTRAINT fk_product_id FOREIGN KEY (product_id)
-    REFERENCES public.products (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-    CONSTRAINT chk_order_items_status CHECK (status::text = ANY (ARRAY['ACTIVE'::character varying, 'CANCELLED'::character varying]::text[]))
-    )
+    id   bigserial
+        primary key,
+    name varchar
+        constraint uq_categories
+            unique
+);
 
-    TABLESPACE pg_default;
+alter table public.categories
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.order_items
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.orders
+create table public.products
 (
-    id bigint NOT NULL DEFAULT nextval('orders_id_seq'::regclass),
-    buyer_id bigint NOT NULL DEFAULT nextval('orders_buyer_id_seq'::regclass),
-    status character varying COLLATE pg_catalog."default" NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-                             CONSTRAINT orders_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_buyer_id FOREIGN KEY (buyer_id)
-    REFERENCES public.users (id) MATCH SIMPLE
-                         ON UPDATE NO ACTION
-                         ON DELETE NO ACTION,
-    CONSTRAINT chk_orders_status CHECK (status::text = ANY (ARRAY['NEW'::character varying, 'PROCESSING'::character varying, 'SHIPPED'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying]::text[])) NOT VALID
-    )
+    id          bigserial
+        primary key,
+    seller_id   bigint                not null
+        constraint fk_seller_id
+            references public.users
+            on delete restrict,
+    category_id bigint                not null
+        constraint fk_category_id
+            references public.categories
+            on delete restrict,
+    name        varchar               not null,
+    description varchar               not null,
+    price       numeric(10, 2)        not null,
+    "left"      bigint                not null,
+    is_deleted  boolean default false not null,
+    rating      numeric(2, 1)
+);
 
-    TABLESPACE pg_default;
+alter table public.products
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.orders
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.product_images
+create table public.product_images
 (
-    id bigint NOT NULL DEFAULT nextval('product_images_id_seq'::regclass),
-    product_id bigint NOT NULL DEFAULT nextval('product_images_product_id_seq'::regclass),
-    path character varying COLLATE pg_catalog."default" NOT NULL,
-    "order" bigint NOT NULL,
-    CONSTRAINT product_images_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_product_id FOREIGN KEY (product_id)
-    REFERENCES public.products (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    )
+    id         bigserial
+        primary key,
+    product_id bigint  not null
+        constraint fk_product_id
+            references public.products
+            on delete cascade,
+    path       varchar not null,
+    "order"    bigint  not null
+);
 
-    TABLESPACE pg_default;
+alter table public.product_images
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.product_images
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.products
+create table public.orders
 (
-    id bigint NOT NULL DEFAULT nextval('products_id_seq'::regclass),
-    seller_id bigint NOT NULL DEFAULT nextval('products_seller_id_seq'::regclass),
-    category_id bigint NOT NULL DEFAULT nextval('products_category_id_seq'::regclass),
-    name character varying COLLATE pg_catalog."default" NOT NULL,
-    description character varying COLLATE pg_catalog."default" NOT NULL,
-    price numeric(10,2) NOT NULL,
-    "left" bigint NOT NULL,
-    is_deleted boolean NOT NULL DEFAULT false,
-    CONSTRAINT products_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_category_id FOREIGN KEY (category_id)
-    REFERENCES public.categories (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-    CONSTRAINT fk_seller_id FOREIGN KEY (seller_id)
-    REFERENCES public.users (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    )
+    id         bigserial
+        primary key,
+    buyer_id   bigint                   not null
+        constraint fk_buyer_id
+            references public.users
+            on delete restrict,
+    status     varchar                  not null
+        constraint chk_orders_status
+            check ((status)::text = ANY
+        ((ARRAY ['NEW'::character varying, 'PROCESSING'::character varying, 'SHIPPED'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying])::text[])),
+    created_at timestamp with time zone not null
+);
 
-    TABLESPACE pg_default;
+alter table public.orders
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.products
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.roles
+create table public.order_items
 (
-    id bigint NOT NULL DEFAULT nextval('roles_id_seq'::regclass),
-    name character varying COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT roles_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_roles_name UNIQUE (name)
-    )
+    id                bigserial
+        primary key,
+    order_id          bigint         not null
+        constraint fk_order_id
+            references public.orders
+            on delete cascade,
+    product_id        bigint         not null
+        constraint fk_product_id
+            references public.products
+            on delete restrict,
+    quantity          bigint         not null,
+    price_at_purchase numeric(10, 2) not null,
+    status            varchar        not null
+        constraint chk_order_items_status
+            check ((status)::text = ANY ((ARRAY ['ACTIVE'::character varying, 'CANCELLED'::character varying])::text[]))
+    );
 
-    TABLESPACE pg_default;
+alter table public.order_items
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.roles
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.users
+create table public.cart_items
 (
-    id bigint NOT NULL DEFAULT nextval('users_id_seq'::regclass),
-    role_id bigint NOT NULL DEFAULT nextval('users_role_id_seq'::regclass),
-    login character varying COLLATE pg_catalog."default" NOT NULL,
-    password_hash character varying COLLATE pg_catalog."default" NOT NULL,
-    address character varying COLLATE pg_catalog."default",
-    CONSTRAINT users_pkey PRIMARY KEY (id),
-    CONSTRAINT uq_login UNIQUE (login),
-    CONSTRAINT fk_role_id FOREIGN KEY (role_id)
-    REFERENCES public.roles (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    )
+    "user_Id"  bigint not null
+        constraint fk_user_id
+            references public.users
+            on delete cascade,
+    product_id bigint not null
+        constraint fk_product_id
+            references public.products
+            on delete cascade,
+    quantity   bigint not null,
+    primary key ("user_Id", product_id)
+);
 
-    TABLESPACE pg_default;
+alter table public.cart_items
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.users
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.wishlist_items
+create table public.wishlist_items
 (
-    user_id bigint NOT NULL DEFAULT nextval('wishlist_items_user_id_seq'::regclass),
-    product_id bigint NOT NULL DEFAULT nextval('wishlist_items_product_id_seq'::regclass),
-    CONSTRAINT wishlist_items_pkey PRIMARY KEY (user_id, product_id),
-    CONSTRAINT fk_product_id FOREIGN KEY (product_id)
-    REFERENCES public.products (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
-    REFERENCES public.users (id) MATCH SIMPLE
-    ON UPDATE NO ACTION
-    ON DELETE NO ACTION
-    )
+    user_id    bigint not null
+        constraint fk_user_id
+            references public.users
+            on delete cascade,
+    product_id bigint not null
+        constraint fk_product_id
+            references public.products
+            on delete cascade,
+    primary key (user_id, product_id)
+);
 
-    TABLESPACE pg_default;
+alter table public.wishlist_items
+    owner to marketplace_user;
 
-ALTER TABLE IF EXISTS public.wishlist_items
-    OWNER to marketplace_user;
-
-CREATE TABLE IF NOT EXISTS public.reviews
+create table public.reviews
 (
-    id bigint NOT NULL DEFAULT nextval('reviews_id_seq'::regclass),
-    order_item_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    product_id bigint NOT NULL,
-    rating smallint NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-                             CONSTRAINT reviews_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_order_item_id FOREIGN KEY (order_item_id)
-    REFERENCES public.order_items (id) MATCH SIMPLE
-                         ON UPDATE NO ACTION
-                         ON DELETE NO ACTION,
-    CONSTRAINT fk_product_id FOREIGN KEY (product_id)
-    REFERENCES public.products (id) MATCH SIMPLE
-                         ON UPDATE NO ACTION
-                         ON DELETE NO ACTION,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
-    REFERENCES public.users (id) MATCH SIMPLE
-                         ON UPDATE NO ACTION
-                         ON DELETE NO ACTION,
-    CONSTRAINT chk_rating CHECK (rating >= 1 AND rating <= 5)
-    )
+    id            bigserial
+        primary key,
+    order_item_id bigint                   not null
+        constraint fk_order_item_id
+            references public.order_items,
+    user_id       bigint                   not null
+        constraint fk_user_id
+            references public.users,
+    product_id    bigint                   not null
+        constraint fk_product_id
+            references public.products,
+    rating        smallint                 not null
+        constraint chk_rating
+            check ((rating >= 1) AND (rating <= 5)),
+    created_at    timestamp with time zone not null,
+    description   varchar,
+    constraint uq_user_id_product_id
+        unique (user_id, product_id)
+);
 
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.reviews
-    OWNER to marketplace_user;
+alter table public.reviews
+    owner to marketplace_user;
