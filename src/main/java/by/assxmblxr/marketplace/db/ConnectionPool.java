@@ -13,9 +13,21 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * Thread-safe singleton pool of pooled JDBC {@link Connection}s to the application database.
+ * <p>
+ * Configuration ({@code DB_URL}, {@code DB_USER}, {@code DB_PASSWORD}) is read once from
+ * environment variables when the singleton is first initialized. The pool is pre-filled
+ * with a fixed number of physical connections at construction time.
+ * <p>
+ * Connections handed out by {@link #getConnection()} are wrapped in a dynamic proxy
+ * ({@link ConnectionProxy}) so that calling {@link Connection#close()} on them returns
+ * the underlying connection to the pool instead of physically closing it.
+ */
 public final class ConnectionPool {
   private static final Logger log = LoggerFactory.getLogger(ConnectionPool.class);
   private static final ConnectionPool INSTANCE = new ConnectionPool();
+  private static final int CONNECTION_POOL_SIZE = 10;
 
   private final BlockingQueue<Connection> pool;
   private final String url;
@@ -36,8 +48,8 @@ public final class ConnectionPool {
       throw new ConnectionPoolException(e.getMessage(), e);
     }
 
-    pool = new ArrayBlockingQueue<>(10);
-    for (int i = 0; i < 10; i++) {
+    pool = new ArrayBlockingQueue<>(CONNECTION_POOL_SIZE);
+    for (int i = 0; i < CONNECTION_POOL_SIZE; i++) {
       try {
         var connection = DriverManager.getConnection(url, user, password);
         pool.add(connection);
@@ -47,10 +59,23 @@ public final class ConnectionPool {
     }
   }
 
+  /**
+   * Returns the singleton instance of the pool.
+   *
+   * @return the shared {@link ConnectionPool} instance
+   */
   public static ConnectionPool getInstance() {
     return INSTANCE;
   }
 
+  /**
+   * Borrows a connection from the pool, blocking until one becomes available.
+   * <p>
+   * The returned {@link Connection} is a proxy: calling {@link Connection#close()} on it
+   * returns the underlying connection to the pool instead of closing the physical connection.
+   *
+   * @return a pooled, ready-to-use connection
+   */
   public Connection getConnection() {
     try {
       Connection real = pool.take();
@@ -64,6 +89,15 @@ public final class ConnectionPool {
     }
   }
 
+  /**
+   * Returns a connection borrowed via {@link #getConnection()} back to the pool.
+   * Called internally by {@link ConnectionProxy} when the proxy's {@code close()} is invoked.
+   * <p>
+   * If the connection is no longer valid, it is transparently replaced with a fresh one
+   * so the pool never shrinks below its configured size.
+   *
+   * @param real the real (unwrapped) connection being released
+   */
   void releaseConnection(Connection real) {
     Connection toReturn = real;
     try {
@@ -91,6 +125,12 @@ public final class ConnectionPool {
     }
   }
 
+  /**
+   * Closes every physical connection currently held by the pool.
+   * Intended to be called once, on application shutdown (e.g. from a
+   * {@code ServletContextListener#contextDestroyed}). A failure to close one
+   * connection is logged and does not prevent the rest from being closed.
+   */
   public void shutdown() {
     List<Connection> connections = new ArrayList<>();
     pool.drainTo(connections);

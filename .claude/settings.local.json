@@ -7,7 +7,23 @@
       "Bash(PGPASSWORD=dev_password_change_me psql *)",
       "Read(//private/tmp/lombok-test/**)",
       "Bash(/Users/assxmblxr/Library/Java/JavaVirtualMachines/temurin-25.0.3/Contents/Home/bin/javac -J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED -J--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED -cp /Users/assxmblxr/.m2/repository/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar:/Users/assxmblxr/.m2/repository/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar Test.java)",
-      "Bash(echo \"exit=$?\")"
+      "Bash(echo \"exit=$?\")",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/org/testcontainers/postgresql/maven-metadata.xml\")",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/org/testcontainers/jdbc/maven-metadata.xml\")",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/org/testcontainers/junit-jupiter/maven-metadata.xml\")",
+      "Bash(./mvnw dependency:tree)",
+      "Read(//Users/assxmblxr/.m2/repository/com/squareup/okhttp3/okhttp/5.1.0/**)",
+      "Bash(jar tf *)",
+      "Read(//private/tmp/**)",
+      "Bash(unzip -p ~/.m2/repository/com/squareup/okhttp3/okhttp/5.1.0/okhttp-5.1.0.jar META-INF/MANIFEST.MF)",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp-jvm/maven-metadata.xml\")",
+      "Bash(mkdir -p /Users/assxmblxr/.claude/jobs/8965b2c5/tmp)",
+      "Read(//Users/assxmblxr/.claude/jobs/8965b2c5/tmp/**)",
+      "Bash(curl -s -o okhttp-jvm-5.4.0.jar \"https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp-jvm/5.4.0/okhttp-jvm-5.4.0.jar\")",
+      "Bash(curl -s -o okhttp-jvm-5.1.0.jar \"https://repo1.maven.org/maven2/com/squareup/okhttp3/okhttp-jvm/5.1.0/okhttp-jvm-5.1.0.jar\")",
+      "Bash(./mvnw -q test -Dtest=SmokeTest)",
+      "Bash(javap -p -c org/testcontainers/jdbc/ContainerDatabaseDriver.class)",
+      "Bash(./mvnw -q test -Dtest=OrderItemDaoTest)"
     ]
   }
 }

@@ -7,9 +7,6 @@ create table public.roles
             unique
 );
 
-alter table public.roles
-    owner to marketplace_user;
-
 create table public.users
 (
     id            bigserial
@@ -25,9 +22,6 @@ create table public.users
     address       varchar
 );
 
-alter table public.users
-    owner to marketplace_user;
-
 create table public.categories
 (
     id   bigserial
@@ -36,9 +30,6 @@ create table public.categories
         constraint uq_categories
             unique
 );
-
-alter table public.categories
-    owner to marketplace_user;
 
 create table public.products
 (
@@ -60,9 +51,6 @@ create table public.products
     rating      numeric(2, 1)
 );
 
-alter table public.products
-    owner to marketplace_user;
-
 create table public.product_images
 (
     id         bigserial
@@ -74,9 +62,6 @@ create table public.product_images
     path       varchar not null,
     "order"    bigint  not null
 );
-
-alter table public.product_images
-    owner to marketplace_user;
 
 create table public.orders
 (
@@ -92,9 +77,6 @@ create table public.orders
         ((ARRAY ['NEW'::character varying, 'PROCESSING'::character varying, 'SHIPPED'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying])::text[])),
     created_at timestamp with time zone not null
 );
-
-alter table public.orders
-    owner to marketplace_user;
 
 create table public.order_items
 (
@@ -115,9 +97,6 @@ create table public.order_items
             check ((status)::text = ANY ((ARRAY ['ACTIVE'::character varying, 'CANCELLED'::character varying])::text[]))
     );
 
-alter table public.order_items
-    owner to marketplace_user;
-
 create table public.cart_items
 (
     "user_Id"  bigint not null
@@ -132,9 +111,6 @@ create table public.cart_items
     primary key ("user_Id", product_id)
 );
 
-alter table public.cart_items
-    owner to marketplace_user;
-
 create table public.wishlist_items
 (
     user_id    bigint not null
@@ -147,9 +123,6 @@ create table public.wishlist_items
             on delete cascade,
     primary key (user_id, product_id)
 );
-
-alter table public.wishlist_items
-    owner to marketplace_user;
 
 create table public.reviews
 (
@@ -172,6 +145,3 @@ create table public.reviews
     constraint uq_user_id_product_id
         unique (user_id, product_id)
 );
-
-alter table public.reviews
-    owner to marketplace_user;
