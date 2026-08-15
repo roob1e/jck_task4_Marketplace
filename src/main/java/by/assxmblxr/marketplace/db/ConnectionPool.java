@@ -8,6 +8,8 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -70,7 +72,16 @@ public final class ConnectionPool {
         toReturn = DriverManager.getConnection(url, user, password);
       }
     } catch (SQLException e) {
-      throw new ConnectionPoolException(e.getMessage(), e);
+      try {
+        pool.put(DriverManager.getConnection(url, user, password));
+      } catch (SQLException err) {
+        throw new ConnectionPoolException(err.getMessage(), err);
+      } catch (InterruptedException err) {
+        Thread.currentThread().interrupt();
+        throw new ConnectionPoolException(err.getMessage(), err);
+      }
+      log.warn("Could not release connection, created a new one", e);
+      return;
     }
     try {
       pool.put(toReturn);
@@ -78,5 +89,20 @@ public final class ConnectionPool {
       Thread.currentThread().interrupt();
       throw new ConnectionPoolException(e.getMessage(), e);
     }
+  }
+
+  public void shutdown() {
+    List<Connection> connections = new ArrayList<>();
+    pool.drainTo(connections);
+    int closed = 0;
+    for (Connection connection : connections) {
+      try {
+        connection.close();
+        closed++;
+      } catch (SQLException e) {
+        log.error(e.getMessage(), e);
+      }
+    }
+    log.info("Closed {} connections", closed);
   }
 }

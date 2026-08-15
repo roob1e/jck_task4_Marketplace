@@ -8,8 +8,6 @@ metadata:
 spec:
   replicas: 1
   strategy:
-    # ReadWriteOnce PVC can only be mounted by one pod at a time —
-    # kill the old pod before starting the new one instead of rolling.
     type: Recreate
   selector:
     matchLabels:
@@ -37,8 +35,6 @@ spec:
               mountPath: /var/lib/postgresql/data
           readinessProbe:
             exec:
-              # $(VAR) is only expanded by kubelet in command/args, not in probe
-              # exec arrays — route through a shell so *it* expands the real env vars.
               command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
             initialDelaySeconds: 5
             periodSeconds: 5
