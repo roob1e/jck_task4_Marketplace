@@ -10,5 +10,6 @@
     <file url="file://$PROJECT_DIR$/src/main/java/by/assxmblxr/marketplace/dao/impl/RememberTokenDaoImpl.java" value="f1747c79-b4ad-4a29-81fa-79c47e382764" />
     <file url="file://$PROJECT_DIR$/src/main/java/by/assxmblxr/marketplace/dao/impl/ReviewDaoImpl.java" value="f1747c79-b4ad-4a29-81fa-79c47e382764" />
     <file url="file://$PROJECT_DIR$/src/main/java/by/assxmblxr/marketplace/dao/impl/UserDaoImpl.java" value="f1747c79-b4ad-4a29-81fa-79c47e382764" />
+    <file url="file://$PROJECT_DIR$/src/main/java/by/assxmblxr/marketplace/dao/impl/WishlistItemDaoImpl.java" value="f1747c79-b4ad-4a29-81fa-79c47e382764" />
   </component>
 </project>
