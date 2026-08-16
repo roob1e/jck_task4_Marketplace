@@ -31,7 +31,7 @@ public class RememberTokenDaoImpl implements RememberTokenDao {
       if (rows > 0) {
         return token;
       } else {
-        throw new DaoException("Could not save token");
+        throw new DaoException("Failed to create rememberToken");
       }
     } catch (SQLException e) {
       throw new DaoException(e.getMessage(), e);

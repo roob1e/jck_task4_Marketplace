@@ -99,7 +99,7 @@ create table public.order_items
 
 create table public.cart_items
 (
-    "user_Id"  bigint not null
+    user_id    bigint not null
         constraint fk_user_id
             references public.users
             on delete cascade,
@@ -108,7 +108,7 @@ create table public.cart_items
             references public.products
             on delete cascade,
     quantity   bigint not null,
-    primary key ("user_Id", product_id)
+    primary key (user_id, product_id)
 );
 
 create table public.wishlist_items
