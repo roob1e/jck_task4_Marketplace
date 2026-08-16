@@ -3,7 +3,7 @@ package by.assxmblxr.marketplace.dao.impl;
 import by.assxmblxr.marketplace.dao.UserDao;
 import by.assxmblxr.marketplace.db.ConnectionPool;
 import by.assxmblxr.marketplace.exception.DaoException;
-import by.assxmblxr.marketplace.model.Role;
+import by.assxmblxr.marketplace.model.UserRole;
 import by.assxmblxr.marketplace.model.User;
 
 import java.sql.*;
@@ -25,7 +25,7 @@ public class UserDaoImpl implements UserDao {
             """;
     try (Connection conn = pool.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-      ps.setString(1, user.role().name());
+      ps.setString(1, user.userRole().name());
       ps.setString(2, user.login());
       ps.setString(3, user.passwordHash());
       ps.setString(4, user.address());
@@ -33,7 +33,7 @@ public class UserDaoImpl implements UserDao {
       try (ResultSet rs = ps.getGeneratedKeys()) {
         if (rs.next()) {
           long id = rs.getLong(1);
-          user = new User(id, user.role(), user.login(), user.passwordHash(), user.address());
+          user = new User(id, user.userRole(), user.login(), user.passwordHash(), user.address());
           return user;
         } else {
           throw new DaoException("Failed to create a user");
@@ -54,7 +54,7 @@ public class UserDaoImpl implements UserDao {
             """;
     try (Connection conn = pool.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
-      ps.setString(1, user.role().name());
+      ps.setString(1, user.userRole().name());
       ps.setString(2, user.login());
       ps.setString(3, user.passwordHash());
       ps.setString(4, user.address());
@@ -130,7 +130,7 @@ public class UserDaoImpl implements UserDao {
       String passwordHash = rs.getString("password_hash");
       String address = rs.getString("address");
       String roleName = rs.getString("role_name");
-      return Optional.of(new User(id, Role.valueOf(roleName), login, passwordHash, address));
+      return Optional.of(new User(id, UserRole.valueOf(roleName), login, passwordHash, address));
     }
     return Optional.empty();
   }

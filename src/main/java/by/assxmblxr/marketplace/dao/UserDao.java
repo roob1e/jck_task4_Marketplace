@@ -19,7 +19,7 @@ public interface UserDao {
   User save(User user);
 
   /**
-   * Updates an existing user's role, login, password hash, and address.
+   * Updates an existing user's userRole, login, password hash, and address.
    *
    * @param user the user data to write, identified by {@link User#id()}
    * @return an {@link Optional} containing the updated user if a user with the given id

@@ -1,11 +1,11 @@
 package by.assxmblxr.marketplace.model;
 
 /**
- * Role of a {@link User} account, determining what actions it is permitted to perform.
+ * UserRole of a {@link User} account, determining what actions it is permitted to perform.
  * Names must match the {@code roles.name} rows in the database exactly, since DAO
- * implementations resolve a user's {@code role_id} by looking up a role by this name.
+ * implementations resolve a user's {@code role_id} by looking up a userRole by this name.
  */
-public enum Role {
+public enum UserRole {
   /** Can browse products and place orders. */
   BUYER,
   /** Can list products for sale. */

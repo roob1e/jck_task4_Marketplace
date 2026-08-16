@@ -124,6 +124,17 @@ create table public.wishlist_items
     primary key (user_id, product_id)
 );
 
+create table public.remember_tokens
+(
+    token_hash varchar                  not null
+        primary key,
+    user_id    bigint                   not null
+        constraint fk_user_id
+            references public.users
+            on delete cascade,
+    expires_at timestamp with time zone not null
+);
+
 create table public.reviews
 (
     id            bigserial

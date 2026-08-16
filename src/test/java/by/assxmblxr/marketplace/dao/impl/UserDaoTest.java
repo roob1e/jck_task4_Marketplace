@@ -2,7 +2,7 @@ package by.assxmblxr.marketplace.dao.impl;
 
 import by.assxmblxr.marketplace.dao.AbstractDaoTest;
 import by.assxmblxr.marketplace.dao.UserDao;
-import by.assxmblxr.marketplace.model.Role;
+import by.assxmblxr.marketplace.model.UserRole;
 import by.assxmblxr.marketplace.model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +27,12 @@ public class UserDaoTest extends AbstractDaoTest {
 
   @Test
   void testSave() {
-    User user = new User(null, Role.BUYER, "user2", "user", null);
+    User user = new User(null, UserRole.BUYER, "user2", "user", null);
     User actual = userDao.save(user);
 
     assertAll(
             () -> assertNotNull(actual.id()),
-            () -> assertEquals(user.role(), actual.role()),
+            () -> assertEquals(user.userRole(), actual.userRole()),
             () -> assertEquals(user.login(), actual.login()),
             () -> assertEquals(user.passwordHash(), actual.passwordHash()),
             () -> assertEquals(user.address(), actual.address())
@@ -42,7 +42,7 @@ public class UserDaoTest extends AbstractDaoTest {
   @Test
   void testUpdatePositive() {
     String newLogin = "newLogin";
-    User user = new User(userId, Role.BUYER, newLogin, "user", null);
+    User user = new User(userId, UserRole.BUYER, newLogin, "user", null);
 
     Optional<User> updated = userDao.update(user);
 
@@ -55,7 +55,7 @@ public class UserDaoTest extends AbstractDaoTest {
 
   @Test
   void testUpdateNegative() {
-    User user = new User(Long.MAX_VALUE, Role.BUYER, "user1", "user", null);
+    User user = new User(Long.MAX_VALUE, UserRole.BUYER, "user1", "user", null);
 
     Optional<User> updated = userDao.update(user);
     assertTrue(updated.isEmpty());
@@ -85,7 +85,7 @@ public class UserDaoTest extends AbstractDaoTest {
     User u = actual.orElseGet(Assertions::fail);
     assertAll(
             () -> assertEquals(userId, u.id()),
-            () -> assertEquals(Role.BUYER, u.role()),
+            () -> assertEquals(UserRole.BUYER, u.userRole()),
             () -> assertEquals("user1", u.login())
     );
   }
@@ -106,7 +106,7 @@ public class UserDaoTest extends AbstractDaoTest {
     assertAll(
             () -> assertEquals(1L, u.id()),
             () -> assertEquals(login, u.login()),
-            () -> assertEquals(Role.BUYER, u.role())
+            () -> assertEquals(UserRole.BUYER, u.userRole())
     );
   }
 
