@@ -107,7 +107,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void changePassword(Long userId, String oldPassword, String newPassword) {
-    User user = userDao.findById(userId).orElseThrow(() -> new ServiceException("error.invalid_credentials"));
+    User user = userDao.findById(userId)
+            .orElseThrow(() -> new ServiceException("error.invalid_credentials"));
     if (!BCrypt.checkpw(oldPassword, user.passwordHash())) {
       throw new ServiceException("error.invalid_credentials");
     }
@@ -123,7 +124,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User updateProfile(Long userId, String login, String address) {
-    User user = userDao.findById(userId).orElseThrow(() -> new ServiceException("error.invalid_credentials"));
+    User user = userDao.findById(userId)
+            .orElseThrow(() -> new ServiceException("error.invalid_credentials"));
     User updatedUser = new User(userId, user.userRole(), login, user.passwordHash(), address);
     try {
       return userDao.update(updatedUser)

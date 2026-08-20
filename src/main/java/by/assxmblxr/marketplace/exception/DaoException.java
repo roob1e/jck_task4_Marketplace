@@ -6,7 +6,8 @@ package by.assxmblxr.marketplace.exception;
  * this represents an infrastructure failure the caller cannot recover from, not an
  * expected business-rule violation.
  */
-public class DaoException extends RuntimeException {
+public class DaoException extends RuntimeException implements LocalizedException {
+  private static final String MESSAGE_KEY = "error.database";
 
   public DaoException(String message) {
     super(message);
@@ -22,5 +23,10 @@ public class DaoException extends RuntimeException {
 
   public DaoException() {
     super();
+  }
+
+  @Override
+  public String getMessageKey() {
+    return MESSAGE_KEY;
   }
 }

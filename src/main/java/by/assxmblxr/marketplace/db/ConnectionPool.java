@@ -28,6 +28,7 @@ public final class ConnectionPool {
   private static final Logger log = LoggerFactory.getLogger(ConnectionPool.class);
   private static final ConnectionPool INSTANCE = new ConnectionPool();
   private static final int CONNECTION_POOL_SIZE = 10;
+  private static final String DRIVER = "org.postgresql.Driver";
 
   private final BlockingQueue<Connection> pool;
   private final String url;
@@ -43,7 +44,7 @@ public final class ConnectionPool {
     }
 
     try {
-      Class.forName("org.postgresql.Driver");
+      Class.forName(DRIVER);
     } catch (ClassNotFoundException e) {
       throw new ConnectionPoolException(e.getMessage(), e);
     }

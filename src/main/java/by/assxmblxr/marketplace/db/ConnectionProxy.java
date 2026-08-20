@@ -13,7 +13,7 @@ import java.sql.Connection;
  * {@link Connection#close()}: instead of physically closing the connection, it is
  * returned to the owning {@link ConnectionPool} for reuse.
  */
-public class ConnectionProxy implements InvocationHandler {
+class ConnectionProxy implements InvocationHandler {
   private final Connection real;
   private final ConnectionPool pool;
 
@@ -23,7 +23,7 @@ public class ConnectionProxy implements InvocationHandler {
    * @param real the real, unwrapped connection to delegate calls to
    * @param pool the pool that {@code real} was borrowed from, and should be returned to on close
    */
-  public ConnectionProxy(Connection real, ConnectionPool pool) {
+  ConnectionProxy(Connection real, ConnectionPool pool) {
     this.real = real;
     this.pool = pool;
   }

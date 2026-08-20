@@ -9,7 +9,7 @@ package by.assxmblxr.marketplace.exception;
  * it against a {@code ResourceBundle} to render a localized message, so no English text
  * is hardcoded here.
  */
-public class ServiceException extends RuntimeException {
+public class ServiceException extends RuntimeException implements LocalizedException {
   private final String messageKey;
 
   /**
@@ -29,9 +29,7 @@ public class ServiceException extends RuntimeException {
     this.messageKey = messageKey;
   }
 
-  /**
-   * @return the resource bundle key identifying the localized message to show
-   */
+  @Override
   public String getMessageKey() {
     return messageKey;
   }
